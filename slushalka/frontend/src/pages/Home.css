@@ -38,3 +38,46 @@
   opacity: 1;
 }
 
+/* --- Стили для белого аудиоплеера --- */
+.rhap_main-controls-button,
+.rhap_main-controls-button svg,
+.rhap_additional-controls button,
+.rhap_additional-controls button svg,
+.rhap_volume-button,
+.rhap_volume-button svg {
+  color: #fff !important;
+  fill: #fff !important;
+}
+.rhap_time {
+  color: #fff !important;
+}
+.rhap_progress-bar-show-download,
+.rhap_progress-bar {
+  background: rgba(255,255,255,0.3) !important;
+}
+.rhap_progress-filled {
+  background: #fff !important;
+}
+.rhap_progress-indicator {
+  background: #fff !important;
+  box-shadow: 0 0 4px #fff, 0 0 8px #fff;
+}
+.rhap_volume-bar {
+  background: rgba(255,255,255,0.3) !important;
+}
+.rhap_volume-indicator {
+  background: #fff !important;
+  box-shadow: 0 0 4px #fff, 0 0 8px #fff;
+}
+.rhap_volume-filled {
+  background: #fff !important;
+}
+.rhap_container,
+.rhap_controls-section,
+.rhap_download-progress {
+  color: #fff !important;
+  fill: #fff !important;
+  background: transparent !important;
+}
+/* --- Конец стилей для белого аудиоплеера --- */
+

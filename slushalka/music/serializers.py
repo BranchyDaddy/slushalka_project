@@ -23,7 +23,7 @@ class TrackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Track
-        fields = ['trackid', 'name', 'duration', 'releasedate', 'lyrics', 'genre', 'album', 'artist']
+        fields = ['trackid', 'name', 'duration', 'releasedate', 'lyrics', 'genre', 'albumid', 'audio_file', 'album', 'artist']
 
     def get_album(self, obj):
         return obj.albumid.title if obj.albumid else None

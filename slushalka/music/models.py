@@ -79,9 +79,10 @@ class Track(models.Model):
     lyrics = models.TextField(blank=True, null=True)
     genre = models.CharField(max_length=20, blank=True, null=True)
     albumid = models.ForeignKey(Album, models.DO_NOTHING, db_column='AlbumID', blank=True, null=True)
+    audio_file = models.FileField(upload_to='tracks/', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'track'
 
 class Trackauthors(models.Model):
