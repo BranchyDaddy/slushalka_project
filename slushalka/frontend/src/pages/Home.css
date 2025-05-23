@@ -50,17 +50,44 @@
 }
 .rhap_time {
   color: #fff !important;
+  font-size: 12px !important;
+  margin: 0 5px !important;
+}
+.rhap_progress-container {
+  padding: 0 !important;
+  margin: 0 5px !important;
+  height: 4px !important;
+  cursor: pointer !important;
+  min-width: 120px !important;
+  width: 100% !important;
+  flex: 0.8 !important;
 }
 .rhap_progress-bar-show-download,
 .rhap_progress-bar {
   background: rgba(255,255,255,0.3) !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  margin: 0 5px !important;
+  width: 100% !important;
 }
 .rhap_progress-filled {
   background: #fff !important;
+  border-radius: 2px !important;
+  height: 4px !important;
+  width: 100% !important;
 }
 .rhap_progress-indicator {
   background: #fff !important;
-  box-shadow: 0 0 4px #fff, 0 0 8px #fff;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 4px #fff !important;
+  margin-top: -2px !important;
+}
+.rhap_download-progress {
+  background: rgba(255,255,255,0.2) !important;
+  border-radius: 2px !important;
+  height: 4px !important;
 }
 .rhap_volume-bar {
   background: rgba(255,255,255,0.3) !important;
@@ -78,6 +105,15 @@
   color: #fff !important;
   fill: #fff !important;
   background: transparent !important;
+}
+
+.rhap_main-controls {
+  margin: 0 5px !important;
+}
+
+.rhap_main-controls-button {
+  width: 24px !important;
+  height: 24px !important;
 }
 /* --- Конец стилей для белого аудиоплеера --- */
 

@@ -1,21 +1,91 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { Card, CardContent, Typography, Grid, Avatar, Box, Container } from '@mui/material';
+import { Card, CardContent, Typography, Grid, Avatar, Box, Container, IconButton } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import AudioPlayer from 'react-h5-audio-player';
-import 'react-h5-audio-player/lib/styles.css';
+import PauseIcon from '@mui/icons-material/Pause';
 import './Home.css'; // стили для плеера
 
 const API_URL = 'http://localhost:8000/api/tracks/'; // замени на свой адрес, если нужно
 
 function TrackList() {
   const [tracks, setTracks] = useState([]);
+  const [playingTrack, setPlayingTrack] = useState(null);
+  const [trackPositions, setTrackPositions] = useState({}); // trackid: position
+  const audioRef = useRef(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
 
   useEffect(() => {
     axios.get(API_URL)
       .then(res => setTracks(res.data))
       .catch(() => setTracks([]));
   }, []);
+
+  useEffect(() => {
+    const checkAuth = () => setIsAuthenticated(!!localStorage.getItem('token'));
+    window.addEventListener('storage', checkAuth);
+    window.addEventListener('authChanged', checkAuth);
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('authChanged', checkAuth);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  const handlePlay = (track) => {
+    // Если уже играет этот трек — ставим на паузу и сохраняем позицию
+    if (playingTrack === track.trackid) {
+      if (audioRef.current) {
+        const pos = audioRef.current.currentTime;
+        setTrackPositions(prev => ({ ...prev, [track.trackid]: pos }));
+        audioRef.current.pause();
+      }
+      setPlayingTrack(null);
+      return;
+    }
+
+    // Если играет другой трек — останавливаем его и сохраняем позицию
+    if (audioRef.current) {
+      const prevId = playingTrack;
+      if (prevId && audioRef.current.currentTime) {
+        setTrackPositions(prev => ({ ...prev, [prevId]: audioRef.current.currentTime }));
+      }
+      audioRef.current.pause();
+      audioRef.current.src = '';
+      audioRef.current = null;
+    }
+
+    const newAudio = new window.Audio(track.audio_file);
+
+    // Восстанавливаем позицию только после загрузки метаданных
+    newAudio.addEventListener('loadedmetadata', () => {
+      if (trackPositions[track.trackid]) {
+        newAudio.currentTime = trackPositions[track.trackid];
+      }
+      newAudio.play();
+    });
+
+    newAudio.addEventListener('ended', () => {
+      setPlayingTrack(null);
+    });
+
+    // Если метаданные уже загружены (например, кэш), сразу ставим позицию
+    if (newAudio.readyState >= 1 && trackPositions[track.trackid]) {
+      newAudio.currentTime = trackPositions[track.trackid];
+      newAudio.play();
+    }
+
+    audioRef.current = newAudio;
+    setPlayingTrack(track.trackid);
+  };
 
   return (
     <Container maxWidth="lg">
@@ -62,34 +132,23 @@ function TrackList() {
                     </Typography>
                   </Box>
                   {track.audio_file && (
-                    <Box
-                      sx={{
-                        width: 320,
-                        minWidth: 200,
-                        maxWidth: 400,
-                        borderRadius: 2,
-                        overflow: 'hidden',
-                        background: 'transparent',
-                        p: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        height: 56,
-                      }}
-                    >
-                      <AudioPlayer
-                        src={track.audio_file}
-                        style={{
-                          background: 'transparent',
-                          boxShadow: 'none',
-                          color: '#fff',
-                          borderRadius: 8,
-                          height: 40,
+                    isAuthenticated ? (
+                      <IconButton
+                        onClick={() => handlePlay(track)}
+                        sx={{
+                          color: '#4f2c91',
+                          '&:hover': {
+                            color: '#7f53ac',
+                          },
                         }}
-                        customAdditionalControls={[]}
-                        customVolumeControls={[]}
-                        layout="horizontal"
-                      />
-                    </Box>
+                      >
+                        {playingTrack === track.trackid ? <PauseIcon /> : <PlayArrowIcon />}
+                      </IconButton>
+                    ) : (
+                      <Typography variant="body2" sx={{ color: '#bdbdbd', fontStyle: 'italic', ml: 2 }}>
+                        Только для авторизованных
+                      </Typography>
+                    )
                   )}
                 </CardContent>
                 <Typography variant="body2" sx={{ color: '#4f2c91', fontFamily: 'Montserrat, sans-serif', fontWeight: 500, minWidth: 70, textAlign: 'right' }}>
