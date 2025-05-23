@@ -1,0 +1,40 @@
+.rainbow-text {
+  font-family: 'Russo One', 'Montserrat', Arial, sans-serif;
+  font-weight: 400;
+  font-size: clamp(4rem, 12vw, 8rem);
+  background: linear-gradient(270deg, #ff005a, #ffbe00, #00ff94, #00cfff, #a259f7, #ff005a);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 8px #fff;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  user-select: none;
+  animation: rainbow-move 10s linear infinite;
+  opacity: 1;
+}
+
+@keyframes rainbow-move {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.rainbow-heading {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 900;
+  background: linear-gradient(270deg, #ff005a, #ffbe00, #00ff94, #00cfff, #a259f7, #ff005a);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 8px #fff;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  user-select: none;
+  animation: rainbow-move 10s linear infinite;
+  opacity: 1;
+}
+

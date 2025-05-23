@@ -23,7 +23,7 @@ const TrackList = () => {
   return (
     <Container maxWidth="lg">
       <Box sx={{ mt: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, color: '#4f2c91' }}>
+        <Typography variant="h4" component="h1" gutterBottom className="rainbow-heading">
           Треки
         </Typography>
         {loading ? (

@@ -22,7 +22,7 @@ const AlbumList = () => {
   return (
     <Container maxWidth="lg">
       <Box sx={{ mt: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+        <Typography variant="h4" component="h1" gutterBottom className="rainbow-heading">
           Альбомы
         </Typography>
         {loading ? (

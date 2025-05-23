@@ -27,7 +27,7 @@ function Navbar() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ background: 'linear-gradient(90deg, #2a003f 0%, #4f2c91 100%)', boxShadow: '0 4px 24px 0 rgba(80,0,120,0.15)' }}>
       <Container maxWidth="xl">
         <Toolbar>
           <Typography

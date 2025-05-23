@@ -60,15 +60,34 @@ const globalStyles = (
   <GlobalStyles
     styles={{
       body: {
+        position: 'relative',
+        margin: 0,
+        padding: 0,
         minHeight: '100vh',
-        background: 'linear-gradient(-45deg, #e0c3fc, #a259f7, #4f2c91, #e0c3fc)',
-        backgroundSize: '400% 400%',
-        animation: 'gradientBG 12s ease infinite',
-        fontFamily: 'Montserrat, Arial, sans-serif',
+        width: '100vw',
+        boxSizing: 'border-box',
+        overflowX: 'hidden',
+        backgroundColor: '#000',
       },
-      '@keyframes gradientBG': {
-        '0%': { backgroundPosition: '0% 50%' },
-        '50%': { backgroundPosition: '100% 50%' },
+      'body::before': {
+        content: '""',
+        position: 'fixed',
+        zIndex: -1,
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: '#000',
+        background: 'linear-gradient(135deg, #000000 0%, #1e0c30 100%)',
+        transition: 'background 0.3s',
+        animation: 'rainbow-bg 6s linear infinite',
+        backgroundSize: '200% 200%',
+        backgroundRepeat: 'no-repeat',
+      },
+      '@keyframes rainbow-bg': {
+        '0%':   { backgroundPosition: '0% 50%' },
+        '33%':  { backgroundPosition: '50% 100%' },
+        '66%':  { backgroundPosition: '100% 50%' },
         '100%': { backgroundPosition: '0% 50%' },
       },
     }}
