@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Card, CardContent, Typography, Grid, Avatar, Box, Container, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import { useAuth } from '../contexts/AuthContext';
 import './Home.css'; // стили для плеера
 
 const API_URL = 'http://localhost:8000/api/tracks/'; // замени на свой адрес, если нужно
@@ -12,23 +13,14 @@ function TrackList() {
   const [playingTrack, setPlayingTrack] = useState(null);
   const [trackPositions, setTrackPositions] = useState({}); // trackid: position
   const audioRef = useRef(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
   const [lyricsDialog, setLyricsDialog] = useState({ open: false, lyrics: '', title: '' });
+  const { user, loading } = useAuth();
+  const isAuthenticated = !!user;
 
   useEffect(() => {
     axios.get(API_URL)
       .then(res => setTracks(res.data))
       .catch(() => setTracks([]));
-  }, []);
-
-  useEffect(() => {
-    const checkAuth = () => setIsAuthenticated(!!localStorage.getItem('token'));
-    window.addEventListener('storage', checkAuth);
-    window.addEventListener('authChanged', checkAuth);
-    return () => {
-      window.removeEventListener('storage', checkAuth);
-      window.removeEventListener('authChanged', checkAuth);
-    };
   }, []);
 
   useEffect(() => {
