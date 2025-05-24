@@ -8,6 +8,7 @@ class Album(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     listenings = models.IntegerField()
     genre = models.CharField(max_length=20, blank=True, null=True)
+    cover = models.CharField(max_length=255, blank=True, null=True, db_column='cover')
 
     class Meta:
         managed = False
@@ -26,6 +27,7 @@ class Artist(models.Model):
     artistid = models.AutoField(db_column='ArtistID', primary_key=True)
     name = models.CharField(unique=True, max_length=30)
     genre = models.CharField(max_length=20, blank=True, null=True)
+    photo = models.CharField(max_length=255, blank=True, null=True, db_column='photo')
 
     class Meta:
         managed = False
@@ -80,6 +82,7 @@ class Track(models.Model):
     genre = models.CharField(max_length=20, blank=True, null=True)
     albumid = models.ForeignKey(Album, models.DO_NOTHING, db_column='AlbumID', blank=True, null=True)
     audio_file = models.FileField(upload_to='tracks/', blank=True, null=True)
+    cover = models.CharField(max_length=255, blank=True, null=True, db_column='cover')
 
     class Meta:
         managed = True

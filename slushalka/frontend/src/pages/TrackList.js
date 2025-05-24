@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { Card, CardContent, Typography, Grid, Avatar, Box, Container, IconButton } from '@mui/material';
+import { Card, CardContent, Typography, Grid, Avatar, Box, Container, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import './Home.css'; // стили для плеера
@@ -13,6 +13,7 @@ function TrackList() {
   const [trackPositions, setTrackPositions] = useState({}); // trackid: position
   const audioRef = useRef(null);
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [lyricsDialog, setLyricsDialog] = useState({ open: false, lyrics: '', title: '' });
 
   useEffect(() => {
     axios.get(API_URL)
@@ -87,6 +88,13 @@ function TrackList() {
     setPlayingTrack(track.trackid);
   };
 
+  const openLyricsDialog = (track) => {
+    setLyricsDialog({ open: true, lyrics: track.lyrics, title: track.name });
+  };
+  const closeLyricsDialog = () => {
+    setLyricsDialog({ open: false, lyrics: '', title: '' });
+  };
+
   return (
     <Container maxWidth="lg">
       <Box sx={{ mt: 4 }}>
@@ -130,6 +138,16 @@ function TrackList() {
                     <Typography variant="body2" sx={{ color: '#7f53ac', fontFamily: 'Montserrat, sans-serif' }}>
                       {Array.isArray(track.artist) ? track.artist.join(', ') : track.artist} • {track.album || 'Без альбома'}
                     </Typography>
+                    {track.lyrics && (
+                      <>
+                        <button
+                          style={{ marginTop: 8, marginBottom: 4, cursor: 'pointer', background: '#e0c3fc', border: 'none', borderRadius: 4, padding: '4px 12px', color: '#4f2c91', fontWeight: 500 }}
+                          onClick={() => openLyricsDialog(track)}
+                        >
+                          Показать текст
+                        </button>
+                      </>
+                    )}
                   </Box>
                   {track.audio_file && (
                     isAuthenticated ? (
@@ -159,6 +177,19 @@ function TrackList() {
           ))}
         </Grid>
       </Box>
+      <Dialog open={lyricsDialog.open} onClose={closeLyricsDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>{lyricsDialog.title}</DialogTitle>
+        <DialogContent dividers sx={{ maxHeight: 400, overflowY: 'auto' }}>
+          <Typography variant="body2" sx={{ whiteSpace: 'pre-line', color: '#4f2c91' }}>
+            {lyricsDialog.lyrics}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeLyricsDialog} color="primary" variant="contained">
+            Закрыть
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

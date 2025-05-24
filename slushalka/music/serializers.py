@@ -10,12 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
 class ArtistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist
-        fields = ['artistid', 'name', 'genre']
+        fields = ['artistid', 'name', 'genre', 'photo']
 
 class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
-        fields = ['albumid', 'title', 'duration', 'credate', 'description', 'listenings', 'genre']
+        fields = ['albumid', 'title', 'duration', 'credate', 'description', 'listenings', 'genre', 'cover']
 
 class TrackSerializer(serializers.ModelSerializer):
     album = serializers.SerializerMethodField()
@@ -23,7 +23,7 @@ class TrackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Track
-        fields = ['trackid', 'name', 'duration', 'releasedate', 'lyrics', 'genre', 'albumid', 'audio_file', 'album', 'artist']
+        fields = ['trackid', 'name', 'duration', 'releasedate', 'lyrics', 'genre', 'albumid', 'audio_file', 'cover', 'album', 'artist']
 
     def get_album(self, obj):
         return obj.albumid.title if obj.albumid else None
