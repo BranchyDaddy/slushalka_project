@@ -5,6 +5,8 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import { useAuth } from '../contexts/AuthContext';
 import './Home.css'; // стили для плеера
 
@@ -23,6 +25,9 @@ function TrackList() {
   const sourceRef = useRef(null);
   const gainNodeRef = useRef(null);
   const streamRef = useRef(null);
+  const [camActive, setCamActive] = useState(false);
+  const [videoStream, setVideoStream] = useState(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     axios.get(API_URL)
@@ -120,6 +125,33 @@ function TrackList() {
       setMicActive(false);
     }
   };
+
+  const toggleCam = async () => {
+    if (!camActive) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setVideoStream(stream);
+        setCamActive(true);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (err) {
+        alert('Не удалось получить доступ к камере');
+      }
+    } else {
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+        setVideoStream(null);
+      }
+      setCamActive(false);
+    }
+  };
+
+  useEffect(() => {
+    if (camActive && videoRef.current && videoStream) {
+      videoRef.current.srcObject = videoStream;
+    }
+  }, [camActive, videoStream]);
 
   return (
     <Container maxWidth="lg">
@@ -221,6 +253,57 @@ function TrackList() {
       >
         {micActive ? <MicIcon /> : <MicOffIcon />}
       </IconButton>
+      <IconButton
+        onClick={toggleCam}
+        sx={{
+          position: 'fixed',
+          right: 32,
+          bottom: 32,
+          color: camActive ? '#a259f7' : '#fff',
+          background: camActive ? '#f3e8ff' : 'rgba(255,255,255,0.8)',
+          border: camActive ? '2px solid #a259f7' : '2px solid #bdbdbd',
+          zIndex: 1300,
+          boxShadow: '0 4px 16px 0 rgba(80,0,120,0.15)',
+          transition: 'all 0.2s',
+          width: 56,
+          height: 56,
+        }}
+      >
+        {camActive ? <VideocamIcon /> : <VideocamOffIcon />}
+      </IconButton>
+      {camActive && (
+        <Box
+          sx={{
+            position: 'fixed',
+            right: 104,
+            bottom: 32,
+            width: 320,
+            height: 240,
+            zIndex: 1400,
+            borderRadius: 4,
+            overflow: 'hidden',
+            boxShadow: '0 4px 24px 0 rgba(80,0,120,0.25)',
+            border: '4px solid transparent',
+            background: 'rgba(0,0,0,0.7)',
+            animation: 'rainbow-border 3s linear infinite',
+            '@keyframes rainbow-border': {
+              '0%': { borderColor: '#a259f7' },
+              '25%': { borderColor: '#e0c3fc' },
+              '50%': { borderColor: '#8ec5fc' },
+              '75%': { borderColor: '#4f2c91' },
+              '100%': { borderColor: '#a259f7' },
+            },
+          }}
+        >
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            playsInline
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 4 }}
+          />
+        </Box>
+      )}
       <Dialog open={lyricsDialog.open} onClose={closeLyricsDialog} maxWidth="sm" fullWidth>
         <DialogTitle>{lyricsDialog.title}</DialogTitle>
         <DialogContent dividers sx={{ maxHeight: 400, overflowY: 'auto' }}>
