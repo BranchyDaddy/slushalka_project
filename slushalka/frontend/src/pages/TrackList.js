@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Card, CardContent, Typography, Grid, Avatar, Box, Container, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import MicIcon from '@mui/icons-material/Mic';
+import MicOffIcon from '@mui/icons-material/MicOff';
 import { useAuth } from '../contexts/AuthContext';
 import './Home.css'; // стили для плеера
 
@@ -16,6 +18,11 @@ function TrackList() {
   const [lyricsDialog, setLyricsDialog] = useState({ open: false, lyrics: '', title: '' });
   const { user, loading } = useAuth();
   const isAuthenticated = !!user;
+  const [micActive, setMicActive] = useState(false);
+  const audioContextRef = useRef(null);
+  const sourceRef = useRef(null);
+  const gainNodeRef = useRef(null);
+  const streamRef = useRef(null);
 
   useEffect(() => {
     axios.get(API_URL)
@@ -85,6 +92,33 @@ function TrackList() {
   };
   const closeLyricsDialog = () => {
     setLyricsDialog({ open: false, lyrics: '', title: '' });
+  };
+
+  const toggleMic = async () => {
+    if (!micActive) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+        sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
+        gainNodeRef.current = audioContextRef.current.createGain();
+        gainNodeRef.current.gain.value = 2; // Усиление в 2 раза
+        sourceRef.current.connect(gainNodeRef.current).connect(audioContextRef.current.destination);
+        streamRef.current = stream;
+        setMicActive(true);
+      } catch (err) {
+        alert('Не удалось получить доступ к микрофону');
+      }
+    } else {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+      setMicActive(false);
+    }
   };
 
   return (
@@ -169,6 +203,24 @@ function TrackList() {
           ))}
         </Grid>
       </Box>
+      <IconButton
+        onClick={toggleMic}
+        sx={{
+          position: 'fixed',
+          left: 32,
+          bottom: 32,
+          color: micActive ? '#a259f7' : '#fff',
+          background: micActive ? '#f3e8ff' : 'rgba(255,255,255,0.8)',
+          border: micActive ? '2px solid #a259f7' : '2px solid #bdbdbd',
+          zIndex: 1300,
+          boxShadow: '0 4px 16px 0 rgba(80,0,120,0.15)',
+          transition: 'all 0.2s',
+          width: 56,
+          height: 56,
+        }}
+      >
+        {micActive ? <MicIcon /> : <MicOffIcon />}
+      </IconButton>
       <Dialog open={lyricsDialog.open} onClose={closeLyricsDialog} maxWidth="sm" fullWidth>
         <DialogTitle>{lyricsDialog.title}</DialogTitle>
         <DialogContent dividers sx={{ maxHeight: 400, overflowY: 'auto' }}>
